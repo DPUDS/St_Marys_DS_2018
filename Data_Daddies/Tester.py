@@ -16,7 +16,6 @@ class Test():
 
 		#Initialize sampler
 		self.Sample = sampler
-		print(sampler.head())
 		
 
 		#Time the modeler

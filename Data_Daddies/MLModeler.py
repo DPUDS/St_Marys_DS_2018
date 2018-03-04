@@ -44,8 +44,32 @@ MLLog = Log("Master_Log",  "Results_Log",
 								"Model_Name",
 
 								#Model performance
-								"Accuracy", 
-								"Sum_Squared_Error"]])
+								"Model_Accuracy", 
+								"Model_SSE",
+
+								#Model performance by label
+								"0_Model_Accuracy", 
+								"0_Model_SSE",
+								"1_Model_Accuracy", 
+								"1_Model_SSE",
+								"2_Model_Accuracy", 
+								"2_Model_SSE",
+								"3_Model_Accuracy", 
+								"3_Model_SSE",
+								"4_Model_Accuracy", 
+								"4_Model_SSE",
+								"5_Model_Accuracy", 
+								"5_Model_SSE",
+								"6_Model_Accuracy", 
+								"6_Model_SSE",
+								"7_Model_Accuracy", 
+								"7_Model_SSE",
+								"8_Model_Accuracy", 
+								"8_Model_SSE",
+								"9_Model_Accuracy", 
+								"9_Model_SSE",
+								"10_Model_Accuracy", 
+								"10_Model_SSE"]])
 
 #################################################################################################################################
 
@@ -55,8 +79,8 @@ class Modeler():
 	def __init__(self,
 						sample = None,
 					    test_ratio = 0.4,		
-						n_neighbors = 5, 					
-						SVMparams = ('rbf',1,5), 			
+						n_neighbors = 10, 					
+						SVMparams = ('rbf',1,'auto'), 			
 						n_estimators = 30,					
 						monte_carlo = True,
 						monte_carlo_samp_size = 5,
@@ -85,7 +109,7 @@ class Modeler():
 	def run_model(self):
 
 		#General Bank of Classifiers (used with  "All")
-		classifiers = [self.SVM_train_test_model,
+		classifiers = [#self.SVM_train_test_model,
 			           self.RF_train_test_model,
 			           self.GNB_train_test_model,
 			           self.KNN_train_test_model,
@@ -113,6 +137,9 @@ class Modeler():
 	def KNN_train_test_model(self, X_train, X_test, y_train, y_test):
 		KNN_clf = KNeighborsClassifier(n_neighbors = self.KNNeighbors)
 		KNN_clf.fit(X_train,y_train)
+
+		X_train = X_train[X_test.score != 10]
+		X_test = X_test[X_test.score !=10]
 		predicted = KNN_clf.predict(X_test)
 		actual = y_test
 
@@ -175,15 +202,35 @@ class Modeler():
 
 		return self.evaluatePerformance(actual,predicted)
 
-	'''
-	returns accuracy of the sample
-	'''
-	def evaluatePerformance(self, actual, predicted):
-		accuracy = (actual == predicted).value_counts().get(True,0) / actual.size
+
+	def getAccuracySSE(self,actual,predicted):
+		accuracy = (actual == predicted).value_counts().get(True,0) / len(actual)
 		SSE_vals = (actual - predicted)**2
 		SSE = SSE_vals.sum()
 
 		return (accuracy, SSE)
+
+
+	'''
+	returns accuracy of the sample
+	'''
+	def evaluatePerformance(self, actual, predicted):
+		whole_perf = self.getAccuracySSE(actual,predicted)	
+		by_label_perf = []	
+
+		#Results dataframe
+		resDF = pd.DataFrame()
+		resDF["actual"] = actual
+		resDF["predicted"] = predicted
+
+		for label in range(11):
+			#resDF = resDF[resDF.actual == label]
+			if len(resDF[resDF.actual == label]) > 0:
+				by_label_perf.append(self.getAccuracySSE(resDF[resDF.actual == label].actual,resDF[resDF.actual == label].predicted))
+			else:
+				by_label_perf.append((0,0))
+
+		return whole_perf, by_label_perf
 
 	
 	'''
@@ -220,10 +267,9 @@ class Modeler():
 	        	X_train, X_test, y_train, y_test = train_test_split(self.Sample.iloc[:,:-1],self.Sample.iloc[:,-1],test_size = self.TestRatio)
 
 	        	#Get performance and other metadata
-
 	        	self.TrainRowNum = len(X_train)
 	        	self.TestRowNum = len(X_test)
-	        	self.ModelPerf = classifier(X_train,X_test,y_train,y_test)
+	        	self.ModelPerf, self.LabelPerf = classifier(X_train,X_test,y_train,y_test)
 	        	self.ModelName = model_tag
 
 	        	#Add record to results DF
