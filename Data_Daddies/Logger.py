@@ -97,7 +97,31 @@ class Log():
 
 										#Model performance information
 								       	model.ModelPerf[0],		#Accuracy
-								       	model.ModelPerf[1]		#Sum of sqaured errors
+								       	model.ModelPerf[1],		#Sum of sqaured errors
+
+								       	#Model performance by label (accuracy and SSE)
+								       	model.LabelPerf[0][0],
+								       	model.LabelPerf[0][1],
+								       	model.LabelPerf[1][0],
+								       	model.LabelPerf[1][1],
+								       	model.LabelPerf[2][0],
+								       	model.LabelPerf[2][1],
+								       	model.LabelPerf[3][0],
+								       	model.LabelPerf[3][1],
+								       	model.LabelPerf[4][0],
+								       	model.LabelPerf[4][1],
+								       	model.LabelPerf[5][0],
+								       	model.LabelPerf[5][1],
+								       	model.LabelPerf[6][0],
+								       	model.LabelPerf[6][1],
+								       	model.LabelPerf[7][0],
+								       	model.LabelPerf[7][1],
+								       	model.LabelPerf[8][0],
+								       	model.LabelPerf[8][1],
+								       	model.LabelPerf[9][0],
+								       	model.LabelPerf[9][1],
+								       	model.LabelPerf[10][0],
+								       	model.LabelPerf[10][1],								       	
 								        ]],
 
 									   #Add the Collection Log Column Names
@@ -110,14 +134,14 @@ class Log():
 	# Save the collection log as a csv
 	def saveMasterLog(self):
 		#Change working directory for Master Logs
-		os.chdir("/Users/Sam/Documents/Python/St_Marys_DS_2018/Data/MasterLogs")
+		os.chdir("/Users/Sam/Documents/Python/St_Marys_DS_2018/Data_Daddies/Data/MasterLogs")
 
 		self.MasterLog.to_csv(str(dt.datetime.now().strftime("%m-%d_%H.%M.%S")) + "-MasterLog.csv", sep = ",")
 
 	# Save the results log as a csv
 	def saveResultsLog(self, resLogName):
 		#Change working directory for Result Logs
-		os.chdir("/Users/Sam/Documents/Python/St_Marys_DS_2018/Data/ResLogs")
+		os.chdir("/Users/Sam/Documents/Python/St_Marys_DS_2018/Data_Daddies/Data/ResLogs")
 
 		#Save the log
 		self.ResLog.to_csv(resLogName, sep = ",")
